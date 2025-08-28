@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Environment files (pass in via -e or compose instead)
+.env
+.env.*
+*.env
+
+# VCS
+.git/
+.gitignore
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Locks and caches
+uv.lock

@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  build:
+    desc: Build the Docker image for the Financial Datasets MCP server
+    cmds:
+      - docker build -t financial-datasets-mcp .
+
+  rebuild:
+    desc: Rebuild the Docker image without cache (use after code changes)
+    cmds:
+      - docker build --no-cache -t financial-datasets-mcp .
+
+  run:
+    desc: Run the container in sse mode using variables from .env (port 9000)
+    cmds:
+      - docker run --rm -i --env-file .env -p 9000:9000 financial-datasets-mcp

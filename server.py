@@ -3,7 +3,12 @@ import os
 import httpx
 import logging
 import sys
-from mcp.server.fastmcp import FastMCP
+try:
+    # Try standalone fastmcp package (if installed)
+    from fastmcp import FastMCP  # type: ignore
+except Exception:
+    # Fallback to FastMCP provided by the mcp package
+    from mcp.server.fastmcp import FastMCP  # type: ignore
 from dotenv import load_dotenv
 
 # Configure logging to write to stderr
@@ -369,8 +374,6 @@ if __name__ == "__main__":
     # Log server startup
     logger.info("Starting Financial Datasets MCP Server...")
 
-    # Initialize and run the server
-    mcp.run(transport="stdio")
+    mcp.run(transport="http", port=9000)
 
-    # This line won't be reached during normal operation
-    logger.info("Server stopped")
+    logger.info("Shutting down Financial Datasets MCP Server...")
