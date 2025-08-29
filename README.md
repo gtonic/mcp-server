@@ -69,7 +69,42 @@ This MCP server provides the following tools:
    uv run server.py
    ```
 
-## Connecting to Claude Desktop
+## Running with Docker (Taskfile)
+
+You can build and run this MCP server in Docker using the included Taskfile.yml.
+
+Prerequisites:
+- Docker
+- Task (install from https://taskfile.dev/install/)
+
+1. Configure your environment
+   ```bash
+   cp .env.example .env
+   # edit .env and set:
+   # FINANCIAL_DATASETS_API_KEY=your-financial-datasets-api-key
+   ```
+
+2. Build the Docker image
+   ```bash
+   task build
+   ```
+   This builds the image tagged `financial-datasets-mcp`.
+
+3. Run the server (SSE on port 9000)
+   ```bash
+   task run
+   ```
+   Notes:
+   - Uses `--env-file .env` so your API key is available in the container
+   - Publishes port `9000:9000`
+   - Uses `--rm` so the container is removed when it exits
+
+4. Rebuild without cache (after code changes)
+   ```bash
+   task rebuild
+   ```
+
+## Connecting to Claude Desktop (SSE)
 
 1. Install [Claude Desktop](https://claude.ai/desktop) if you haven't already
 
@@ -80,24 +115,21 @@ This MCP server provides the following tools:
    nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
    ```
 
-3. Add the following configuration:
+3. Add the following configuration (SSE transport):
    ```json
    {
      "mcpServers": {
        "financial-datasets": {
-         "command": "/opt/homebrew/bin/uv",
-         "args": [
-           "--directory",
-           "/Users/gtonic/ws_finance/mcp-server",
-           "run",
-           "server.py"
-         ]
+         "transport": "sse",
+         "url": "http://localhost:9000/"
        }
      }
    }
    ```
-   
-   Replace `/path/to/uv` with the result of `which uv` and `/absolute/path/to/financial-datasets-mcp` with the absolute path to this project.
+
+   Notes:
+   - If you started the server with `task run` (Docker) or `uv run server.py` (local), it listens on `http://localhost:9000/`
+   - If the server runs on a different host/port, update the `url` accordingly
 
 4. Restart Claude Desktop
 
@@ -107,3 +139,18 @@ This MCP server provides the following tools:
    - "What are Apple's recent income statements?"
    - "Show me the current price of Tesla stock"
    - "Get historical prices for MSFT from 2024-01-01 to 2024-12-31"
+
+## Testing with MCP Inspector
+
+You can test this MCP server's tools from your browser using the official MCP Inspector.
+
+Prerequisites:
+- Node.js 18+ (or Bun)
+
+1. Ensure the server is running (via `task run` or `uv run server.py`).
+2. Start the Inspector and connect to the SSE endpoint:
+   ```bash
+   npx @modelcontextprotocol/inspector --connect http://localhost:9000/
+   ```
+
+Follow the terminal link to open the Inspector UI, browse tools, and invoke them.
